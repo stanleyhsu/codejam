@@ -7,7 +7,10 @@ set(SOURCE_FILES
 #        hdoj-1000.cpp
 #        rollgame.cpp
 #        sprial.c
-        foo.cpp foo.h test/fooTest.cpp)
+#        foo.cpp foo.h
+#        test/fooTest.cpp
+        main.cpp
+        )
 
 add_executable(alpha ${SOURCE_FILES})
-target_link_libraries(alpha  gtestd)
+#target_link_libraries(alpha  gtestd)
