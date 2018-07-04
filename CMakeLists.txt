@@ -9,6 +9,8 @@ set(SOURCE_FILES
 #        sprial.c
 #        foo.cpp foo.h
 #        test/fooTest.cpp
+#        dfs_partial_sum.cpp
+#        dfs_lake_counter.cpp
         main.cpp
         )
 
