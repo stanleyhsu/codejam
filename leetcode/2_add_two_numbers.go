@@ -1,90 +1,56 @@
 package leetcode
 
-import (
-	"bytes"
-	"math"
-	"strconv"
-)
-
 type ListNode struct {
 	Val  int
 	Next *ListNode
 }
 
+func addNode(prev *ListNode, newVal int) (curr *ListNode, carrier int) {
+	if newVal >= 10 {
+		carrier = 1
+		newVal -= 10
+	} else {
+		carrier = 0
+	}
+	curr = &ListNode{newVal, nil}
+
+	if prev != nil {
+		prev.Next = curr
+	}
+
+	return curr, carrier
+}
+
 func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
-	val := GetIntegarFromList(l1) + GetIntegarFromList(l2)
-	digitArray := ConvertIntToIntArray(val)
-	return NewLinkList(digitArray)
-}
+	var head, curr, prev, left *ListNode
+	var carrier, newVal int
 
-func GetIntegarFromList(l *ListNode) int {
-	var power, result int
-	var curr *ListNode
-	if l == nil {
-		return 0
-	}
+	for l1 != nil && l2 != nil {
+		newVal = l1.Val + l2.Val + carrier
 
-	curr = l
-	for {
-		result = result + curr.Val*int(math.Pow10(power))
-		if curr.Next == nil {
-			break
-		}
-		curr = curr.Next
-		power += 1
-	}
-	return result
-}
-
-func ConvertIntToIntArray(val int) []int {
-	var digitArray []int
-	var remainder, modulus int
-
-	remainder = val % 10
-	modulus = val / 10
-	digitArray = append(digitArray, remainder)
-
-	for modulus > 0 {
-		val = modulus
-		remainder = val % 10
-		modulus = val / 10
-		digitArray = append(digitArray, remainder)
-	}
-	return digitArray
-}
-
-func NewLinkList(vals []int) *ListNode {
-	var head, curr, prev *ListNode
-	var isHeadSet = false
-	for _, val := range vals {
-		curr = &ListNode{val, nil}
-		if !isHeadSet {
+		curr, carrier = addNode(prev, newVal)
+		if head == nil {
 			head = curr
-			isHeadSet = true
-		}
-		if prev != nil {
-			prev.Next = curr
 		}
 		prev = curr
+		l1 = l1.Next
+		l2 = l2.Next
+	}
+
+	if l1 != nil {
+		left = l1
+	} else {
+		left = l2
+	}
+	for left != nil {
+		newVal = left.Val + carrier
+		curr, carrier = addNode(prev, newVal)
+		prev = curr
+		left = left.Next
+	}
+
+	if carrier == 1 {
+		addNode(prev, carrier)
 	}
 	return head
-}
-
-func ToString(l1 *ListNode) string {
-	var buffer bytes.Buffer
-	var curr *ListNode
-	curr = l1
-
-	if l1 == nil {
-		return ""
-	}
-	for {
-		buffer.WriteString(strconv.Itoa(curr.Val))
-		if curr.Next == nil {
-			break
-		}
-		curr = curr.Next
-		buffer.WriteString(" -> ")
-	}
-	return buffer.String()
 }

@@ -1,73 +1,115 @@
 package leetcode
 
 import (
-	"reflect"
-	"strings"
+	"bytes"
+	"strconv"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
-func TestNewLinkList(t *testing.T) {
-	var golden = []struct {
-		want  string
-		input []int
-	}{
-		{"2 -> 4 -> 3", []int{2, 4, 3}},
-		{"5 -> 6 -> 4", []int{5, 6, 4}},
+func NewLinkList(vals []int) *ListNode {
+	var head, curr, prev *ListNode
+	var isHeadSet = false
+	for _, val := range vals {
+		curr = &ListNode{val, nil}
+		if !isHeadSet {
+			head = curr
+			isHeadSet = true
+		}
+		if prev != nil {
+			prev.Next = curr
+		}
+		prev = curr
+	}
+	return head
+}
+
+func ListNodeCompare(l, r *ListNode) int {
+	for l != nil && r != nil {
+		if l.Val > r.Val {
+			return 1
+		} else if l.Val < r.Val {
+			return -1
+		}
+		l = l.Next
+		r = r.Next
 	}
 
-	for _, test := range golden {
-		if got := ToString(NewLinkList(test.input)); strings.Compare(got, test.want) != 0 {
-			t.Errorf("NewLinkList(%v) Got(%s), Expected(%s)", test.input, got, test.want)
-		}
+	if l == nil && r == nil {
+		return 0
+	}
+
+	if l == nil {
+		return -1
+	} else {
+		return 1
 	}
 }
 
-func TestGetIntegarFromList(t *testing.T) {
-	var golden = []struct {
-		want  int
-		input []int
-	}{
-		{342, []int{2, 4, 3}},
-		{465, []int{5, 6, 4}},
+func ToString(l1 *ListNode) string {
+	var buffer bytes.Buffer
+	var curr *ListNode
+	curr = l1
+
+	if l1 == nil {
+		return "(nil)"
 	}
-	for _, test := range golden {
-		if got := GetIntegarFromList(NewLinkList(test.input)); got != test.want {
-			t.Errorf("GetIntegarFromList(%v) Got(%d), Expected(%d)", test.input, got, test.want)
+
+	buffer.WriteString("(")
+	for {
+		buffer.WriteString(strconv.Itoa(curr.Val))
+		if curr.Next == nil {
+			break
 		}
+		curr = curr.Next
+		buffer.WriteString("->")
 	}
+	buffer.WriteString(")")
+
+	return buffer.String()
 }
 
-func TestConvertIntToIntArray(t *testing.T) {
+func TestListNodeCompare(t *testing.T) {
 	var golden = []struct {
-		want  []int
-		input int
-	}{
-		{[]int{2, 4, 3}, 342},
-		{[]int{5, 6, 4}, 465},
-		//{[]int{6, 6, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}, 1000000000000000000000466},
-	}
-	for _, test := range golden {
-		if got := ConvertIntToIntArray(test.input); !reflect.DeepEqual(got, test.want) {
-			t.Errorf("ConvertIntToIntArray(%v) Got(%d), Expected(%d)", test.input, got, test.want)
-		}
-	}
-}
-
-func TestAddTwoNumbers(t *testing.T) {
-	var golden = []struct {
-		want string
+		want int
 		v1   []int
 		v2   []int
 	}{
-		{"7 -> 0 -> 8", []int{2, 4, 3}, []int{5, 6, 4}},
-		//{"7 -> 0 -> 8", []int{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}, []int{5, 6, 4}},
+		{0, []int{2, 4, 3}, []int{2, 4, 3}},
+		{-1, nil, []int{2, 4, 3}},
+		{1, []int{2, 4, 3}, nil},
+		{-1, []int{2, 4, 3}, []int{5, 6, 4}},
 	}
 
 	for _, test := range golden {
 		l1 := NewLinkList(test.v1)
 		l2 := NewLinkList(test.v2)
-		if got := ToString(addTwoNumbers(l1, l2)); strings.Compare(got, test.want) != 0 {
-			t.Errorf("addTwoNumbers(%v, %v) Got(%s), Expected(%s)", test.v1, test.v2, got, test.want)
-		}
+		actual := ListNodeCompare(l1, l2)
+		assert.Equal(t, test.want, actual, "compare %s and %s but want %d but got %d", ToString(l1), ToString(l2), test.want, actual)
+	}
+}
+func TestAddTwoNumbers(t *testing.T) {
+	var golden = []struct {
+		name string
+		want []int
+		v1   []int
+		v2   []int
+	}{
+		{"zero", []int{0}, []int{0}, []int{0}},
+		{"normal", []int{7, 9, 7}, []int{2, 3, 3}, []int{5, 6, 4}},
+		{"carryinmid", []int{7, 0, 8}, []int{2, 4, 3}, []int{5, 6, 4}},
+		{"carryinlast", []int{7, 0, 1, 1}, []int{2, 4, 5}, []int{5, 6, 5}},
+		{"l1longer", []int{7, 9, 7, 1}, []int{2, 3, 3, 1}, []int{5, 6, 4}},
+		{"l2longer", []int{7, 9, 7, 1}, []int{2, 3, 3}, []int{5, 6, 4, 1}},
+		{"l1longerwithcarry", []int{7, 9, 0, 2}, []int{2, 3, 5, 1}, []int{5, 6, 5}},
+	}
+
+	for _, test := range golden {
+		l1 := NewLinkList(test.v1)
+		l2 := NewLinkList(test.v2)
+		want := NewLinkList(test.want)
+		actual := addTwoNumbers(l1, l2)
+		assert.True(t, ListNodeCompare(want, actual) == 0, "%s addTwoNumbers:%v + %v; want %v but got %v", test.name, ToString(l1), ToString(l2), ToString(want), ToString(actual))
 	}
 }
