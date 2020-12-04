@@ -103,6 +103,7 @@ func TestAddTwoNumbers(t *testing.T) {
 		{"l1longer", []int{7, 9, 7, 1}, []int{2, 3, 3, 1}, []int{5, 6, 4}},
 		{"l2longer", []int{7, 9, 7, 1}, []int{2, 3, 3}, []int{5, 6, 4, 1}},
 		{"l1longerwithcarry", []int{7, 9, 0, 2}, []int{2, 3, 5, 1}, []int{5, 6, 5}},
+		{"example3", []int{8, 9, 9, 9, 0, 0, 0, 1}, []int{9, 9, 9, 9, 9, 9, 9}, []int{9, 9, 9, 9}},
 	}
 
 	for _, test := range golden {
