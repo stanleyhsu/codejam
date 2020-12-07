@@ -33,6 +33,7 @@ func isMirror(n1, n2 *TreeNode) bool {
 	if (n1.Right == nil && n2.Left != nil) || (n1.Right != nil && n2.Left == nil) {
 		return false
 	}
+	return true
 }
 func isSymmetric(root *TreeNode) bool {
 	if root == nil {
