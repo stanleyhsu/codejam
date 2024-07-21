@@ -48,9 +48,6 @@
 *.dylib
 *.dll
 
-# Fortran module files
-*.mod
-
 # Compiled Static libraries
 *.lai
 *.la
@@ -104,3 +101,8 @@ cmake-build-debug
 
 # IntelliJ
 .idea
+
+
+# vscode
+.vscode
+
